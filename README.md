@@ -1,7 +1,9 @@
-LDAPAuthCake
+CasAuth
 ============
 
 LDAP authentication plugin for CakePHP.  Currently very basic.
+forked from https://github.com/amn-ecs/LDAPAuthCake
+and adapted to CAS Authentication service
 
 Features
 --------
@@ -27,7 +29,7 @@ $components = array(
     'Auth' => array(
       ...
       'authenticate' => array(
-          'LDAPAuthCake.LDAP'  => array(
+          'CasAuth.Cas'  => array(
               // Connection details - how to connect to your LDAP server
               // (currently no support for multiple servers, so ideally
               // use a load-balanced address)
@@ -117,6 +119,6 @@ $ldap_config = array(
 	)
 );
 
-$this->Auth->authenticate = array('LDAPAuthCake.LDAP' => $ldap_config);
+$this->Auth->authenticate = array('CasAuth.Cas' => $ldap_config);
 
 </pre>
