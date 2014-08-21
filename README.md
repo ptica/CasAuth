@@ -1,7 +1,7 @@
 CasAuth
 ============
 
-LDAP authentication plugin for CakePHP.  Currently very basic.
+LDAP authentication plugin for CakePHP.  Currently very basic.  
 forked from https://github.com/amn-ecs/LDAPAuthCake
 and adapted to CAS Authentication service
 
