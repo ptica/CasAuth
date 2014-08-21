@@ -1,0 +1,9 @@
+{
+  "name": "ptica/CasAuth",
+  "type": "cakephp-plugin",
+  "version": "0.0.1",
+  "require": {
+    "cakephp/cakephp": "2.5.*",
+    "composer/installers": "~1.0"
+  }
+}
