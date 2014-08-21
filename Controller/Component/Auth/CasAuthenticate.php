@@ -2,7 +2,7 @@
 
 App::uses('BaseAuthenticate', 'Controller/Component/Auth');
 
-class LDAPAuthenticate extends BaseAuthenticate {
+class CasAuthenticate extends BaseAuthenticate {
 
 /**
  * Helper function to connect to the LDAP server
@@ -15,12 +15,6 @@ class LDAPAuthenticate extends BaseAuthenticate {
 
 		if (!$ldapConnection) {
 			throw new CakeException("Could not connect to LDAP authentication server");
-		}
-
-		$bind = @ldap_bind($ldapConnection, $this->settings['ldap_bind_dn'], $this->settings['ldap_bind_pw']);
-
-		if (!$bind) {
-			throw new CakeException("Could not bind to LDAP authentication server - check your bind DN and password");
 		}
 
 		return $ldapConnection;
