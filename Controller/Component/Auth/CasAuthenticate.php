@@ -131,55 +131,14 @@ class CasAuthenticate extends BaseAuthenticate {
 			return false;
 		}
 
-		// Look up the user in our DB based on the unique field (username, email or whatever)
-		// NB this is nicked from BaseAuthenticate but without the password check
+		// Look up the user in our DB
+		// look for ldap_lookup_field value in db_lookup_field
 		$userModel = $this->settings['userModel'];
 		list($plugin, $model) = pluginSplit($userModel);
 
-		// It's possible we are using a not-quite-unique username field,
-		// such as an email address - one user may have many addresses, but
-		// each one resolves to one user account.	In this case, we should be
-		// given a list of LDAP attributes in all_usernames which we want to
-		// match against.	This means the user can log in with j.bloggs@example.com
-		// or jb3@example.com and we can still find them, no matter which address
-		// we actually store in the database.
-		$comparison = 'LOWER(' . $model . '.' . $fields['username'] . ')';
-
-		if (isset($this->settings['all_usernames']) && is_array($this->settings['all_usernames'])) {
-
-			$conditions = array('OR' => array($comparison => array()));
-
-			foreach ($this->settings['all_usernames'] as $possibleField) {
-				$possibleField = strtolower($possibleField);
-
-				$possibleUsernames = $ldapUser[$possibleField];
-
-				foreach ($ldapUser[$possibleField] as $key => $possibleUsername) {
-					// LDAP lookup results always include the count field, skip it
-					if ($key === 'count') {
-						continue;
-					}
-
-					// Special case (blech): proxyAddresses in AD contains email addresses,
-					// but needs some fudgery to remove the 'protocol:' part
-					if (strtolower($possibleField) == 'proxyaddresses') {
-						$possibleUsername = preg_replace('/^\S+:\s*/', '', $possibleUsername);
-					}
-
-					$conditions['OR'][$comparison][] = strtolower(trim($possibleUsername));
-				}
-			}
-
-			// Unique-ify it for great justice
-			$conditions['OR'][$comparison] = array_unique($conditions['OR'][$comparison]);
-
-			// Only using a single field, so just look that up (case insensitive)
-		} else {
-
-			$conditions = array(
-				$comparison => strtolower($username),
-			);
-		}
+		$conditions = array(
+			$model . '.' . $this->settings['db_lookup_field'] => $results[$this->settings['ldap_lookup_field']],
+		);
 
 		$dbUser = ClassRegistry::init($userModel)->find('first', array(
 			'conditions' => $conditions,
