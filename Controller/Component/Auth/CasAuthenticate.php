@@ -74,15 +74,11 @@ class CasAuthenticate extends BaseAuthenticate {
 			$attribs = array_merge($attribs, preg_split('/\s+/', $field));
 		}
 
-		// If we've got a list of fields to search for their username (or
-		// most likely, email address) details, get all those attributes too
-		$attribs = array_merge($attribs, $this->settings['all_usernames']);
-
 		// Connect to LDAP server and search for the user object
 		$ldapConnection = $this->__ldapConnect();
 
 		// Suppress warning when no object found
-		$results = @ldap_search($ldapConnection, $this->settings['ldap_base_dn'], $ldapFilter, $attribs, 0, 1);
+		$results = @ldap_search($ldapConnection, $this->settings['ldap_base_dn'], $ldapFilter, $attribs, $attrsonly=0, $sizelimit=1);
 
 		// Failed to find user details, not authenticated.
 		if (!$results || ldap_count_entries($ldapConnection, $results) == 0) {
