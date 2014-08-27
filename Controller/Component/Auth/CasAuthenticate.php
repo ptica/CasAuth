@@ -139,14 +139,10 @@ class CasAuthenticate extends BaseAuthenticate {
 		$conditions = array(
 			$model . '.' . $this->settings['db_lookup_field'] => $results[$this->settings['ldap_lookup_field']],
 		);
-
-		$dbUser = ClassRegistry::init($userModel)->find('first', array(
-			'conditions' => $conditions,
-			'recursive'	=> false
-		));
+		$dbUser = $this->_findUser($conditions);
 
 		// If we couldn't find them in the database, create a new DB entry
-		if (empty($dbUser) || empty($dbUser[$model])) {
+		if (empty($dbUser)) {
 			///	$this->log("[LDAPAuthCake.authenticate] Could not find a database entry for $username", 'ldapauth');
 
 			$results = array_merge($results, $this->settings['defaults']);
@@ -155,20 +151,33 @@ class CasAuthenticate extends BaseAuthenticate {
 				return false;
 			}
 
-			$id = ClassRegistry::init($userModel)->getLastInsertID();
-			$dbUser = ClassRegistry::init($userModel)->findById($id);
+			$dbUser = $this->_findUser($conditions);
 		}
 
-		// Ensure there's nothing in the password field
-		unset($dbUser[$model][$fields['password']]);
-
-		// ...and return the user object.
-		return $dbUser[$model];
+		return $dbUser;
 	}
 
 	// TODO split functionality to common methods of BaseAuthenticate
 	// ie.
-	// protected function _findUser($conditions, $password = null) {
 	// protected function _checkFields(CakeRequest $request, $model, $fields) {
-	
+
+	/**
+	* Find a user record using the standard options.
+	*
+	* The $conditions parameter can be a (string)username or an array containing conditions for Model::find('first').
+	*
+	* @param array $conditions An array of find conditions.
+	* @return Mixed Either false on failure, or an array of user data.
+	*/
+	protected function _findUser($conditions, $password = null) {
+		$userModel = $this->settings['userModel'];
+		list($plugin, $model) = pluginSplit($userModel);
+		$fields = $this->settings['fields'];
+
+		$user = parent::_findUser($conditions);
+		if (isset($user[$fields['password']])) {
+			unset($user[$fields['password']]);
+		}
+		return $user;
+	}
 }
