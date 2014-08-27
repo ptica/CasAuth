@@ -166,4 +166,9 @@ class CasAuthenticate extends BaseAuthenticate {
 		return $dbUser[$model];
 	}
 
+	// TODO split functionality to common methods of BaseAuthenticate
+	// ie.
+	// protected function _findUser($conditions, $password = null) {
+	// protected function _checkFields(CakeRequest $request, $model, $fields) {
+	
 }
