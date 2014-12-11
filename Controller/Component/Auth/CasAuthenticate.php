@@ -141,16 +141,8 @@ class CasAuthenticate extends BaseAuthenticate {
 		);
 		$dbUser = $this->_findUser($conditions);
 
-		// If we couldn't find them in the database, create a new DB entry
 		if (empty($dbUser)) {
-			///	$this->log("[LDAPAuthCake.authenticate] Could not find a database entry for $username", 'ldapauth');
-			$results = array_merge(array('User'=>$results), $this->settings['defaults']);
-			if (!ClassRegistry::init($userModel)->save($results)) {
-				///	echo "Failed to save new user\n"; print_r($results); print_r($username);
-				return false;
-			}
-
-			$dbUser = $this->_findUser($conditions);
+			return false;
 		}
 
 		return $dbUser;
