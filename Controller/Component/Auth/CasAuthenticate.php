@@ -17,6 +17,12 @@ class CasAuthenticate extends BaseAuthenticate {
 			throw new CakeException("Could not connect to LDAP authentication server");
 		}
 
+		// avoid protocol mismatch
+                ldap_set_option($ldapConnection, LDAP_OPT_PROTOCOL_VERSION, Configure::read('ldap.protocol_version'));
+
+                // bind to search user
+                @ldap_bind($ldapConnection, Configure::read('ldap.search_dn'), Configure::read('ldap.search_pass'));
+
 		return $ldapConnection;
 	}
 
